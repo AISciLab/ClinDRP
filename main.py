@@ -3,8 +3,8 @@ import sys
 
 # 假设这些模块在您的项目中存在
 from PDXbaseline.PDXFinetune import PDXFinetune
-from PDTCbaseline.PDTCRegression import PDTCRegression
-from PDTCbaseline.PDTCRegressionTen import PDTCRegressionTenfold
+from finetune.TransferEvaluation import TransferEvaluation
+from finetune.CrossValidation import CrossValidation
 from TCGA.TCGAPredict import TCGA
 from PretrainModel.MultiSmilesDataset import Pretrain
 
@@ -117,9 +117,9 @@ def main():
 
     # 根据 task 名称调用不同的函数
     if args.task == "pdtc-reg":
-        PDTCRegression(args)
+        TransferEvaluation(args)
     elif args.task == "pdtc-ten":
-        PDTCRegressionTenfold(args)
+        CrossValidation(args)
     elif args.task == "pdx-fine":
         PDXFinetune(args)
     elif args.task == "tcga":

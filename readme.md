@@ -1,3 +1,7 @@
+Here is the professional English translation of your README. I have refined the wording to follow standard open-source and academic documentation conventions.
+
+***
+
 # 3DMolReg: Multimodal Drug Response Prediction
 
 This project proposes a deep learning model based on multimodal SMILES sequences and patient characteristics to predict drug response.
@@ -24,9 +28,7 @@ Project/
 │   │   └── checkpoint-80000/
 │   └── custom_tokenizer/
 ├── data/                  # Data directory
-│   ├── PDTC/              # PDTC related data (.csv, .npy)
-│   ├── PDX/               # PDX related data
-│   └── TCGA/              # TCGA related data
+│   └── PDTC/              # PDTC related data (.csv, .npy)
 └── README.md
 ```
 
@@ -50,11 +52,11 @@ Use this task if you wish to re-pretrain the model.
 
 *   **Specify Pretraining Data:**
     ```bash
-    python main.py tcga \
+    python main.py Pretrain \
         --train_data 'data/Pretrain/out_embedding_train.csv'
     ```
 
-### 2. PDTC Regression Task
+### 2. TransferEvaluation Task
 Runs the baseline PDTC dataset training task. By default, it trains using `Sample` data and predicts outcomes on `Model` data.
 
 *   **Default Execution:**
@@ -71,7 +73,7 @@ Runs the baseline PDTC dataset training task. By default, it trains using `Sampl
         --repeat_times 3
     ```
 
-### 3. PDTC 10-Fold Cross-Validation
+### 3. PDTC CrossValidation
 Runs a rigorous 10-fold cross-validation experiment to evaluate the model's generalization capability.
 
 *   **Default Execution:**
@@ -94,16 +96,16 @@ Runs a rigorous 10-fold cross-validation experiment to evaluate the model's gene
 
 You can view the full list of supported parameters for any task by running `python main.py <task> --help`. Below are the common arguments:
 
-| Argument | Type | Description | Default Value |
-| :--- | :--- | :--- |:----------------|
-| `--model_path` | str | Path to the pretrained model | `./model/multiSmiles_model/...` |
-| `--tokenizer_path` | str | Path to the tokenizer | `./model/custom_tokenizer`      |
-| `--batch_size` | int | Training batch size | 128                     |
-| `--learning_rate` | float | Initial learning rate | 1e-4 or 3e-5                     |
-| `--num_epochs` | int | Number of training epochs | 150 (PDX defaults to 50)         |
-| `--dropout_rate` | float | Dropout probability | 0.0 or 0.2                       |
+| Argument | Type | Description | Default Value                       |
+| :--- | :--- | :--- |:------------------------------------|
+| `--model_path` | str | Path to the pretrained model | `./model/multiSmiles_model/...`     |
+| `--tokenizer_path` | str | Path to the tokenizer | `./model/custom_tokenizer`          |
+| `--batch_size` | int | Training batch size | 128                                 |
+| `--learning_rate` | float | Initial learning rate | 1e-4 or 3e-5                        |
+| `--num_epochs` | int | Number of training epochs | 150                                 |
+| `--dropout_rate` | float | Dropout probability |                                     |
 | `--project_name` | str | WandB project name | (Named automatically based on task) |
-| `--weight_decay` | float | Weight decay coefficient | 0.0001 / 0.001                  |
+| `--weight_decay` | float | Weight decay coefficient | 0.0001 / 0.001                      |
 
 ---
 
