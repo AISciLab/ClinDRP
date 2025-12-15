@@ -518,7 +518,7 @@ def TransferEvaluation(args=None):
     model_path = get_opt(args, "model_path", "./model/multiSmiles_model/checkpoint-80000")
     tokenizer_path = get_opt(args, "tokenizer_path", "./model/custom_tokenizer")
 
-    drug_file = get_opt(args, "drug_file", 'data/PDTC/PDTC_Drug_output.csv')
+    drug_file = get_opt(args, "drug_file", 'data/PDTC/PDTC_drug.csv')
     ppi_file = get_opt(args, "sample_ppi_file", 'data/PDTC/PDTC_PPI.npy')
 
     patient_embed_file = get_opt(args, "sample_patient_embed_file", 'data/PDTC/PDTCSample_893_embeddings.npy')
@@ -635,4 +635,5 @@ def TransferEvaluation(args=None):
 
 if __name__ == "__main__":
     Regression(args=None)
+
 
