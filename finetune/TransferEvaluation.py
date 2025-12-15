@@ -7,7 +7,7 @@ import pandas as pd
 import torch
 import torch.nn.functional as F
 import wandb
-from torch.amp import autocast 
+from torch.amp import autocast
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 from transformers import get_linear_schedule_with_warmup, RobertaTokenizer
@@ -15,7 +15,7 @@ from sklearn.manifold import TSNE
 from adabelief_pytorch import AdaBelief
 from scipy import stats
 
-from finetune.Classifier import Classifier
+from finetune.Regressor import Regressor
 from finetune.DatasetPDTC import DatasetPDTC, DataCollatorPDTC
 
 import matplotlib.pyplot as plt
@@ -58,13 +58,13 @@ def calculate_regression_metrics(y_true, y_pred):
     }
 
 
-def train_classification_model(model, train_dataset, val_dataset, batch_size=16, num_epochs=5, learning_rate=2e-5,
+def train_regression_model(model, train_dataset, val_dataset, batch_size=16, num_epochs=5, learning_rate=2e-5,
                                device='cuda', weight_decay=0.01, warmup_steps=0,
                                project_name="drug_patient_regression", run_name="run_1",
                                use_mixed_precision=True, gradient_accumulation_steps=1,
                                num_classes=4,regression_model=None,
-                               output_dir="results", 
-                               save_every_epoch_preds=False, 
+                               output_dir="results",
+                               save_every_epoch_preds=False,
                                save_best_preds=False,
                                csv_path="metrics_log.csv",
                                draw_tsne=False,
@@ -100,27 +100,27 @@ def train_classification_model(model, train_dataset, val_dataset, batch_size=16,
     optimizer_grouped_parameters = [
         {
             "params": [p for n, p in model.drug_model.named_parameters() if p.requires_grad],
-            "lr": learning_rate,  
+            "lr": learning_rate,
             "weight_decay": weight_decay
         },
         {
             "params": patient_other_params,
-            "lr": learning_rate,  
+            "lr": learning_rate,
             "weight_decay": weight_decay
         },
         {
             "params": alpha_params_list,
             "lr": learning_rate * 500,
-            "weight_decay": 0  
+            "weight_decay": 0
         },
         {
             "params": [p for n, p in model.classifier.named_parameters()],
-            "lr": learning_rate, 
+            "lr": learning_rate,
             "weight_decay": weight_decay
         },
         {
             "params": [p for n, p in model.regression_layer.named_parameters()],
-            "lr": learning_rate, 
+            "lr": learning_rate,
             "weight_decay": weight_decay
         }
     ]
@@ -131,12 +131,12 @@ def train_classification_model(model, train_dataset, val_dataset, batch_size=16,
     optimizer = AdaBelief(
         optimizer_grouped_parameters,
         # lr=learning_rate,
-        eps=1e-16,  
+        eps=1e-16,
         betas=(0.9, 0.999),
         weight_decay=weight_decay,
-        weight_decouple=True,  
-        rectify=True,  
-        print_change_log=False  
+        weight_decouple=True,
+        rectify=True,
+        print_change_log=False
     )
     print("\n--- AFTER AdaBelief Initialization ---")
     print(f"Optimizer's Group 1 LR: {optimizer.param_groups[1]['lr']:.6f}")
@@ -164,8 +164,8 @@ def train_classification_model(model, train_dataset, val_dataset, batch_size=16,
     print(f"Learning rate for this group: {optimizer_grouped_parameters[1]['lr']}")
 
     if use_mixed_precision and device != 'cpu':
-        from torch.amp import GradScaler 
-        scaler = GradScaler()  
+        from torch.amp import GradScaler
+        scaler = GradScaler()
     else:
         scaler = None
 
@@ -220,15 +220,15 @@ def train_classification_model(model, train_dataset, val_dataset, batch_size=16,
                         PPI_matrix=PPI_matrix,
                         patient_features=patient_features,
                     )
-                    loss = F.mse_loss(outputs.squeeze(-1), labels) 
+                    loss = F.mse_loss(outputs.squeeze(-1), labels)
                 scaler.scale(loss).backward()
                 if (step + 1) % gradient_accumulation_steps == 0:
                     scaler.unscale_(optimizer)
                     torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
                     scaler.step(optimizer)
                     scaler.update()
-                    optimizer.zero_grad() 
-                    scheduler.step() 
+                    optimizer.zero_grad()
+                    scheduler.step()
             else:
                 outputs = model(
                     input_ids=input_ids,
@@ -248,7 +248,7 @@ def train_classification_model(model, train_dataset, val_dataset, batch_size=16,
                     scheduler.step()
 
             step += 1
-            train_loss += loss.item() * gradient_accumulation_steps 
+            train_loss += loss.item() * gradient_accumulation_steps
             train_targets.extend(labels.cpu().numpy())
             train_predictions.extend(outputs.squeeze(-1).detach().cpu().numpy())
             progress_bar.set_postfix({'loss': loss.item()})
@@ -391,8 +391,8 @@ def train_classification_model(model, train_dataset, val_dataset, batch_size=16,
         if val_avg_loss < best_val_loss:
             best_val_loss = val_avg_loss
             if save_best_preds:
-                best_val_predictions = val_predictions[:]  
-                best_val_targets = val_targets[:] 
+                best_val_predictions = val_predictions[:]
+                best_val_targets = val_targets[:]
                 print("Best predictions updated.")
         if save_best_preds and best_val_predictions is not None:
             best_preds_df = pd.DataFrame({
@@ -483,10 +483,10 @@ def train_classification_model(model, train_dataset, val_dataset, batch_size=16,
         scatter = plt.scatter(
             features_2d[:, 0],
             features_2d[:, 1],
-            c=val_targets, 
+            c=val_targets,
             cmap='viridis',
             alpha=0.7,
-            s=15  
+            s=15
         )
 
         cbar = plt.colorbar(scatter)
@@ -541,7 +541,7 @@ def TransferEvaluation(args=None):
     learning_rate = get_opt(args, "learning_rate", 1e-4)
     weight_decay = get_opt(args, "weight_decay", 0.0001)
     project_name = get_opt(args, "project_name", "PDTC")
-    num_runs = get_opt(args, "repeat_times", 10) 
+    num_runs = get_opt(args, "repeat_times", 10)
     regression_model = get_opt(args, "regression_model", None)
 
 
@@ -612,7 +612,7 @@ def TransferEvaluation(args=None):
             ParametersNum=893,
         ).to(device)
 
-        trained_model = train_classification_model(
+        trained_model = train_regression_model(
             model=model,
             train_dataset=train_dataset,
             val_dataset=val_dataset,
@@ -634,7 +634,4 @@ def TransferEvaluation(args=None):
         wandb.finish()
 
 if __name__ == "__main__":
-    Regression(args=None)
-
-
-
+    TransferEvaluation(args=None)
