@@ -518,19 +518,19 @@ def TransferEvaluation(args=None):
     model_path = get_opt(args, "model_path", "./model/multiSmiles_model/checkpoint-80000")
     tokenizer_path = get_opt(args, "tokenizer_path", "./model/custom_tokenizer")
 
-    drug_file = get_opt(args, "drug_file", 'data/PDTC/PDTC_drug.csv')
+    drug_file = get_opt(args, "drug_file", 'data/PDTC/PDTC_Drug.csv')
     ppi_file = get_opt(args, "sample_ppi_file", 'data/PDTC/PDTC_PPI.npy')
 
-    patient_embed_file = get_opt(args, "sample_patient_embed_file", 'data/PDTC/PDTCSample_893_embeddings.npy')
+    patient_embed_file = get_opt(args, "sample_patient_embed_file", 'data/PDTC/PDTCSample_embeddings.npy')
     sensitivity_file = get_opt(args, "sample_sensitivity_file", 'data/PDTC/SampleResponse.csv')
-    patient_feature_file = get_opt(args, "sample_patient_feature_file", 'data/PDTC/PDTCSample_893_laplacian.npy')
-    patient_name_file = get_opt(args, "sample_patient_name_file", 'data/PDTC/PDTCSample_893_normed.csv')
+    patient_feature_file = get_opt(args, "sample_patient_feature_file", 'data/PDTC/PDTCSample_laplacian.npy')
+    patient_name_file = get_opt(args, "sample_patient_name_file", 'data/PDTC/PDTCSample_name.csv')
 
-    Model_patient_embed_file = get_opt(args, "model_patient_embed_file", 'data/PDTC/PDTCModel_893_embeddings.npy')
+    Model_patient_embed_file = get_opt(args, "model_patient_embed_file", 'data/PDTC/PDTCModel_embeddings.npy')
     Model_sensitivity_file = get_opt(args, "model_sensitivity_file", "data/PDTC/ModelResponse.csv")
     Model_patient_feature_file = get_opt(args, "model_patient_feature_file",
-                                         'data/PDTC/PDTCModel_893_laplacian.npy')
-    Model_patient_name_file = get_opt(args, "model_patient_name_file", 'data/PDTC/PDTCModel_893_normed.csv')
+                                         'data/PDTC/PDTCModel_laplacian.npy')
+    Model_patient_name_file = get_opt(args, "model_patient_name_file", 'data/PDTC/PDTCModel_name.csv')
 
     num_classes = get_opt(args, "num_classes", 1)
     num_layer = get_opt(args, "num_layer", 2)
@@ -635,5 +635,6 @@ def TransferEvaluation(args=None):
 
 if __name__ == "__main__":
     Regression(args=None)
+
 
 
