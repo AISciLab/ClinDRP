@@ -28,7 +28,8 @@ Project/
 │   │   └── checkpoint-80000/
 │   └── custom_tokenizer/
 ├── data/                  # Data directory
-│   └── PDTC/              # PDTC related data (.csv, .npy)
+│   ├── PDTC/              # PDTC related data (.csv, .npy)
+│   └── PDX/               # PDX related data (.csv, .npy)
 └── README.md
 ```
 
@@ -95,13 +96,13 @@ Runs a rigorous 10-fold cross-validation experiment to evaluate the model's gene
 
 *   **Default Execution:**
     ```bash
-    python main.py pdx-fine
+    python main.py pdx-clas
     ```
 
 *   **Custom Execution:**
     ```bash
     # Specify WandB project name and increase number of Epochs
-    python main.py pdx-fine \
+    python main.py pdx-clas \
         --project_name "PDX_10Fold_Exp1" \
         --num_epochs 200 \
         --batch_size 128
@@ -133,4 +134,5 @@ If you use this project in your research, please cite the following reference:
 ```bibtex
 
 ```
+
 
