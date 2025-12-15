@@ -461,12 +461,12 @@ def CrossValidationForPDX(args=None):
     model_path = get_opt(args, "model_path", "./model/multiSmiles_model/checkpoint-80000")
     tokenizer_path = get_opt(args, "tokenizer_path", "./model/custom_tokenizer")
 
-    drug_file = get_opt(args, "drug_file", 'data/PDX/PDX_drugOutput.csv')
-    ppi_file = get_opt(args, "sample_ppi_file", 'data/PDX/933standard_adjacency_score_matrix.npy')
-    patient_embed_file = get_opt(args, "sample_patient_embed_file", 'data/PDX/PDX933_embeddings.npy')
+    drug_file = get_opt(args, "drug_file", 'data/PDX/PDX_drug.csv')
+    ppi_file = get_opt(args, "sample_ppi_file", 'data/PDX/PDX_PPI.npy')
+    patient_embed_file = get_opt(args, "sample_patient_embed_file", 'data/PDX/PDX_embeddings.npy')
     sensitivity_file = get_opt(args, "sample_sensitivity_file", 'data/PDX/PDX_sensitivity.csv')
-    patient_feature_file = get_opt(args, "sample_patient_feature_file", 'data/PDX/PDX_933_laplacian.npy')
-    patient_name_file = get_opt(args, "sample_patient_name_file", 'data/PDX/PDX_embed.csv')
+    patient_feature_file = get_opt(args, "sample_patient_feature_file", 'data/PDX/PDX_laplacian.npy')
+    patient_name_file = get_opt(args, "sample_patient_name_file", 'data/PDX/PDX_name.csv')
     model_file = get_opt(args, "model_file", 'data/PDX/PDX_model.csv')
 
     num_classes = get_opt(args, "num_classes", 2)
@@ -477,7 +477,7 @@ def CrossValidationForPDX(args=None):
     num_epochs = get_opt(args, "num_epochs", 100)
     learning_rate = get_opt(args, "learning_rate", 1e-4)
     weight_decay = get_opt(args, "weight_decay", 0.0001)
-    project_name = get_opt(args, "project_name", "PDXFinetuneTen")
+    project_name = get_opt(args, "project_name", "PDXCrossValidation")
 
     regression_model = get_opt(args, "regression_model", None)
 
@@ -540,3 +540,4 @@ def CrossValidationForPDX(args=None):
 
 if __name__ == "__main__":
     CrossValidationForPDX(args=None)
+
