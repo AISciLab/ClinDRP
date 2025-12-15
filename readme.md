@@ -89,6 +89,23 @@ Runs a rigorous 10-fold cross-validation experiment to evaluate the model's gene
         --num_epochs 200 \
         --batch_size 128
     ```
+    
+### 3. PDX CrossValidation
+Runs a rigorous 10-fold cross-validation experiment to evaluate the model's generalization capability.
+
+*   **Default Execution:**
+    ```bash
+    python main.py pdx-fine
+    ```
+
+*   **Custom Execution:**
+    ```bash
+    # Specify WandB project name and increase number of Epochs
+    python main.py pdx-fine \
+        --project_name "PDX_10Fold_Exp1" \
+        --num_epochs 200 \
+        --batch_size 128
+    ```
 
 ---
 
