@@ -4,7 +4,6 @@ import sys
 from PDXbaseline.PDXFinetune import PDXFinetune
 from finetune.TransferEvaluation import TransferEvaluation
 from finetune.CrossValidation import CrossValidation
-from TCGA.TCGAPredict import TCGA
 from PretrainModel.MultiSmilesDataset import Pretrain
 
 
@@ -105,3 +104,4 @@ def main():
 if __name__ == "__main__":
 
     main()
+
