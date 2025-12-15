@@ -7,13 +7,10 @@ class EvenLayerTransformerEncoder(nn.Module):
     def __init__(self, patient_encoding_dim, dropout_rate=0.05, num_layers=4, num_heads=8, ParametersNum=933):
         super().__init__()
 
-        # 确保层数是偶数
         assert num_layers % 2 == 0, "Number of layers must be even"
 
-        # 初始输入投影层
         self.input_projection = nn.Linear(patient_encoding_dim, 512)
 
-        # 残差连接参数矩阵
         self.alpha_params = nn.ParameterList([
             nn.Parameter(torch.empty(ParametersNum, ParametersNum)) for _ in range(num_layers)
         ])
@@ -21,7 +18,6 @@ class EvenLayerTransformerEncoder(nn.Module):
         for param in self.alpha_params:
             nn.init.kaiming_uniform_(param, a=0, mode='fan_in', nonlinearity='relu')
 
-        # Transformer编码器层
         self.transformer_layers = nn.ModuleList([
             CustomTransformerEncoderLayer(
                 d_model=512,
@@ -33,30 +29,24 @@ class EvenLayerTransformerEncoder(nn.Module):
             ) for i in range(num_layers)
         ])
 
-        # 层归一化
         self.layer_norms = nn.ModuleList([
             nn.LayerNorm(512) for _ in range(num_layers)
         ])
 
-        # 最终输出投影
         self.output_projection = nn.Sequential(
             nn.Linear(512, 768),
             nn.ReLU(),
             nn.Dropout(dropout_rate)
         )
-        # 平均池化
         self.seq_pooling = nn.AdaptiveAvgPool1d(1)
 
     def forward(self, patient_encoding, PPI_matrix=None, patient_features=None, return_attention=False):
-        # 应用投影
         x = self.input_projection(patient_encoding)
 
         all_attention_weights = []
 
-        # 通过Transformer层
         for i, (layer, layer_norm, alpha_matrix) in enumerate(
                 zip(self.transformer_layers, self.layer_norms, self.alpha_params)):
-            # 设置外部矩阵
             external_matrix = None
             if i % 2 == 0:
                 if patient_features is not None:
@@ -64,42 +54,33 @@ class EvenLayerTransformerEncoder(nn.Module):
             elif PPI_matrix is not None:
                 external_matrix = PPI_matrix
 
-            # 传递alpha矩阵和外部矩阵到transformer层
             layer_output = layer(x, external_matrix=external_matrix, alpha_matrix=alpha_matrix,
                                  return_attention=return_attention)
             if return_attention:
-                # 如果需要返回注意力权重，收集它们
                 x, attention_weights = layer_output
-                # 收集当前层的注意力权重
                 all_attention_weights.append(attention_weights)
             else:
                 x = layer_output
-            # 应用层归一化
+
             x = layer_norm(x)  # [batch_size, 1200, 512]
 
-        # 转置后进行池化
+
         pooled_output = x.transpose(1, 2)  # [batch_size, 512, 1200]
         pooled_output = self.seq_pooling(pooled_output)  # [batch_size, 512, 1]
         pooled_output = pooled_output.squeeze(2)  # [batch_size, 512]
         final_embedding = self.output_projection(pooled_output)
 
-        # 不需要返回注意力
         if not return_attention:
             return final_embedding
 
-        # 如果需要，则计算并返回注意力信息
         else:
-            # 将所有层的注意力权重堆叠起来 [num_layers, batch, nhead, seq_len, seq_len]
             stacked_attentions = torch.stack(all_attention_weights, dim=0)
 
-            # 1. 计算最终的两两间注意力
             # [num_layers, batch, nhead, seq, seq] -> [batch, seq, seq]
             final_pairwise_attention = stacked_attentions.mean(dim=[0, 2])
 
-            # 2. 计算每个序列的重要性
             sequence_importance = final_pairwise_attention.sum(dim=1)  # [batch, seq_len]
 
-            # 返回字典
             return {
                 "patient_embedding": final_embedding,  # [batch_size, 768]
                 "pairwise_attention": final_pairwise_attention,  # [batch_size, seq_len, seq_len]
@@ -108,9 +89,6 @@ class EvenLayerTransformerEncoder(nn.Module):
 
 
 class CustomTransformerEncoderLayer(nn.Module):
-    """
-    优化后的自定义Transformer编码器层，使用参数矩阵而非单个参数进行残差连接
-    """
 
     def __init__(self, d_model, nhead, dim_feedforward, dropout, activation, layer_idx):
         super().__init__()
@@ -121,33 +99,25 @@ class CustomTransformerEncoderLayer(nn.Module):
         self.head_dim = d_model // nhead
         self.dropout_rate = dropout
 
-        # 多头自注意力
         self.self_attn = nn.MultiheadAttention(d_model, nhead, dropout=dropout, batch_first=True)
 
-        # 前馈网络
         self.linear1 = nn.Linear(d_model, dim_feedforward)
         self.dropout = nn.Dropout(dropout)
         self.linear2 = nn.Linear(dim_feedforward, d_model)
 
-        # 层归一化
         self.norm1 = nn.LayerNorm(d_model)
         self.norm2 = nn.LayerNorm(d_model)
         self.dropout1 = nn.Dropout(dropout)
         self.dropout2 = nn.Dropout(dropout)
 
-        # 设置激活函数
         self.activation = activation
 
-        # 投影层
         self.q_proj = nn.Linear(d_model, d_model)
         self.k_proj = nn.Linear(d_model, d_model)
         self.v_proj = nn.Linear(d_model, d_model)
         self.out_proj = nn.Linear(d_model, d_model)
 
     def forward(self, src, external_matrix=None, alpha_matrix=None, return_attention=False):
-        """
-        优化的前向传播，使用参数矩阵进行残差连接
-        """
         batch_size, seq_len, _ = src.shape
 
         if external_matrix is not None or alpha_matrix is not None:
@@ -171,9 +141,6 @@ class CustomTransformerEncoderLayer(nn.Module):
             return src
 
     def _optimized_attention(self, src, external_matrix, alpha_matrix):
-        """
-        注意力计算
-        """
         batch_size, seq_len, _ = src.shape
 
         q = self.q_proj(src)
@@ -198,7 +165,6 @@ class CustomTransformerEncoderLayer(nn.Module):
             alpha_gate = torch.sigmoid(alpha_matrix)
             alpha_gate_expanded = alpha_gate.unsqueeze(0).unsqueeze(0)
 
-            # 扩展维度
             ext_matrix_expanded = normalized_ext_matrix.unsqueeze(1)
 
             raw_attn_scores = (dynamic_attn_scores * alpha_gate_expanded +
@@ -216,5 +182,6 @@ class CustomTransformerEncoderLayer(nn.Module):
         attn_output = attn_output.transpose(1, 2).contiguous().view(batch_size, seq_len, self.d_model)
 
         attn_output = self.out_proj(attn_output)
+
 
         return attn_output, raw_attn_scores
