@@ -15,7 +15,7 @@ from tqdm import tqdm
 from transformers import get_linear_schedule_with_warmup, RobertaTokenizer
 from torch.utils.data import ConcatDataset
 
-from finetune.Classifier import Classifier
+from finetune.Regressor import Regressor
 from finetune.DatasetPDTC import DatasetPDTC, DataCollatorPDTC
 
 import matplotlib.pyplot as plt
@@ -54,7 +54,7 @@ def calculate_regression_metrics(y_true, y_pred):
     }
 
 
-def train_classification_model(model, train_dataset, val_dataset, batch_size=16, num_epochs=5, learning_rate=2e-5,
+def train_regression_model(model, train_dataset, val_dataset, batch_size=16, num_epochs=5, learning_rate=2e-5,
                                device='cuda', weight_decay=0.01, warmup_steps=0,
                                project_name="drug_patient_regression", run_name="run_1",
                                use_mixed_precision=True, gradient_accumulation_steps=1,
@@ -444,7 +444,7 @@ def CrossValidation(args=None):
 
         current_run_name = f"{run_name}_fold_{fold + 1}"
         wandb.init(project=project_name, name=current_run_name, reinit=True)
-        model = Classifier(
+        model = Regressor(
             drug_model_path=model_path,
             patient_encoding_dim=512,
             num_classes=num_classes,
@@ -454,7 +454,7 @@ def CrossValidation(args=None):
             ParametersNum=893,
         ).to(device)
 
-        trained_model = train_classification_model(
+        trained_model = train_regression_model(
             model=model,
             train_dataset=datasets['train'],
             val_dataset=datasets['val'],
@@ -479,5 +479,6 @@ def CrossValidation(args=None):
 if __name__ == "__main__":
 
     CrossValidation(args=None)
+
 
 
