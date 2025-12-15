@@ -7,10 +7,10 @@ from PretrainModel.MultiSmilesModel import MultiSmilesModelConfig, MultiSmilesMo
 
 class Classifier(nn.Module):
     def __init__(self, drug_model_path, patient_encoding_dim, num_classes=4, num_layer=4,
-                 num_heads = 8,dropout_rate=0.1,ParametersNum=933,):
+                 num_heads = 8,dropout_rate=0.1,ParametersNum=893,):
         super().__init__()
 
-        self.config = MultiSmilesModelConfig.from_pretrained(drug_model_path)# 加载预训练的多模态药物模型配置
+        self.config = MultiSmilesModelConfig.from_pretrained(drug_model_path)
 
         model = MultiSmilesModel(self.config)
 
@@ -131,4 +131,5 @@ class Classifier(nn.Module):
         features_256d = self.classifier(combined_representation)
 
         return features_256d
+
 
