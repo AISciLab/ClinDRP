@@ -1,12 +1,19 @@
 ***
 
-# 3DMolReg: Multimodal Drug Response Prediction
+# ClinDRP: Multimodal Drug Response Prediction
 
-Identification of drug response in cancer patients by using deep learning has become the foundation of precision medicine.
-Unfortunately, patients with drug response are often scarce, limiting the performance of deep learning.
-Simultaneously, most methods use separate models for sequence or three-dimensional (3D) structures, hindering fine-grained interaction cross modalities. 
-Furthermore, the multi-scale regulatory networks in life system play the key role in patient response to drugs.
-Therefore, we propose a deep learning framework, 3DMolReg, that designs a multimodal molecular language model and patient representation learning to improve clinical drug response prediction. In the 3D structure-aware multimodal language model, molecular conformations are discretized into tokens as context and prompt knowledge for sequence masking models, enabling the fine-grained interaction cross modalities. In patient representation learning, regulatory networks at gene, protein and pathway levels are hierarchically mapped into Transformer by adaptive functions. Across multiple scenarios of drug response and disease progression prediction, 3DMolReg achieved superior performance and captured the pharmacology and biochemistry mechanisms. Importantly, the sensitive drugs predicted by 3DMolReg can improve the survival outcomes of clinical patients, further suggesting its potential in anticancer drug therapies.
+Accurate identification of drug response in cancer patients is the foundation of precision medicine. Recently, molecular language
+models provide the great opportunities for drug response prediction. However, most methods ignore the mapping relation
+cross modalities, leading to deviate from the basic criterion of molecular modeling. Furthermore, the clinical response of
+patients is closely associated with multi-scale regulatory networks within life systems. In this study, we propose a deep learning
+framework, ClinDRP, that integrates cross-modal interaction of molecules and multi-order regulatory within patient to improve
+clinical drug response prediction. Specifically, ClinDRP designs a conditional masked language model on the unified multimodal
+sequences where three-dimensional (3D) conformations are discretized into tokens as context of 1D sequence, thus capturing
+fine-grained interaction cross modalities. In patient representation learning, regulatory networks at gene, protein and pathway
+levels are hierarchically embedded into Transformer through adaptive mapping functions. Across multiple scenarios of drug
+response and disease progression prediction, ClinDRP achieved superior performance and explored potential mechanisms
+behind pharmacological and biochemical processes. Importantly, the sensitive drugs predicted by ClinDRP can improve the
+survival outcomes of clinical patients, further highlighting its potential in anticancer drug therapies.
 
 ## 🛠 Installation
 
@@ -136,6 +143,7 @@ If you use this project in your research, please cite the following reference:
 ```bibtex
 
 ```
+
 
 
 
