@@ -115,7 +115,7 @@ def initialize_model(tokenizer):
     model = MultiSmilesModelForMaskedLM(config)
     return model
 
-def train_new_tokenizer(train_files=None, output_dir="./custom_tokenizer"):
+def train_new_tokenizer(train_files=None, output_dir="./tokenizer"):
     if train_files is None:
         df = pd.read_csv(train_files)
         smiles_list = df['smiles'].tolist()
@@ -234,4 +234,5 @@ def Pretrain(args):
 if __name__ == "__main__":
 
     Pretrain(args)
+
 
