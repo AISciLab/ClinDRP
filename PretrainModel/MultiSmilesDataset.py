@@ -197,7 +197,7 @@ def get_opt(args, attr_name, default_value):
 def Pretrain(args):
     train_data = get_opt(args, "train_data", 'data/Pretrain/out_embedding_train.csv')
     eval_data = get_opt(args, "eval_data", ".data/Pretrain/out_embedding_eval.csv")
-    Pretrain_output_dir = get_opt(args, "Pretrain_output_dir", "model/Mulit_roberta_model")
+    Pretrain_output_dir = get_opt(args, "Pretrain_output_dir", "model/Pretrain_model")
 
     print("Starting to train the custom tokenizer...")
     tokenizer = train_new_tokenizer(
@@ -234,3 +234,4 @@ def Pretrain(args):
 if __name__ == "__main__":
 
     Pretrain(args)
+
