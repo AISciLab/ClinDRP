@@ -33,9 +33,9 @@ To ensure the code runs seamlessly with default parameters, it is recommended to
 Project/
 ├── main.py                # Entry point containing launch logic for all tasks
 ├── model/                 # Stores pretrained model weights and tokenizer
-│   ├── multiSmiles_model/
+│   ├── model_path/
 │   │   └── checkpoint-80000/
-│   └── custom_tokenizer/
+│   └── tokenizer/
 ├── data/                  # Data directory
 │   ├── PDTC/              # PDTC related data (.csv, .npy)
 │   └── PDX/               # PDX related data (.csv, .npy)
@@ -143,6 +143,7 @@ If you use this project in your research, please cite the following reference:
 ```bibtex
 
 ```
+
 
 
 
